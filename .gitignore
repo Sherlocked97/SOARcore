@@ -1,0 +1,51 @@
+# === OS metadata ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Editors / IDEs ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# === Secrets / env ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+credentials.json
+
+# === Logs & temp ===
+*.log
+logs/
+tmp/
+.tmp/
+
+# === Build artifacts ===
+dist/
+build/
+out/
+
+# === Dependency caches (common stacks; expand when stack is chosen) ===
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+target/
+vendor/
+
+# === Claude Code local settings ===
+.claude/
+
+# === Project-private: design workflow kept out of the public repo ===
+CLAUDE.md
+personas/
+context/personas.md
