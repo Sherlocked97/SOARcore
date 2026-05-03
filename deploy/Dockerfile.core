@@ -1,0 +1,34 @@
+# Multi-stage build for cmd/core.
+#
+# Stage 1: build a fully-static binary with CGO disabled. Distroless's
+#          static-debian12 image has no libc, so we can't dynamically
+#          link anything.
+# Stage 2: copy the binary into distroless. No shell, no package manager,
+#          runs as a non-root user by default.
+
+# syntax=docker/dockerfile:1.7
+FROM golang:1.25-bookworm AS build
+WORKDIR /src
+
+# Cache modules separately from sources so a code-only change doesn't
+# re-download the dep graph.
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+COPY . .
+
+# CGO_ENABLED=0 produces a fully-static binary. -trimpath strips local
+# filesystem paths from the binary for reproducibility. -ldflags="-s -w"
+# strips the symbol/debug tables for a smaller image.
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux \
+    go build -trimpath -ldflags="-s -w" -o /out/core ./cmd/core
+
+FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /
+COPY --from=build /out/core /core
+EXPOSE 8080
+USER nonroot:nonroot
+ENTRYPOINT ["/core"]

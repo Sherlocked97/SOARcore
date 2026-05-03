@@ -1,0 +1,85 @@
+# Local development loop.
+#
+#   make up    -> docker compose up -d
+#   make smoke -> waits for healthchecks, runs scripts/smoke.sh
+#   make down  -> docker compose down -v   (drops the volumes too)
+#
+# This file is the ONLY production-portability validation we have today:
+# every component listed here must also be available as a managed service
+# from at least one cloud provider, per the project's deployment-portability
+# principle.
+#
+#   postgres  -> Postgres 16 / Aiven / RDS / Cloud SQL / STACKIT
+#   rabbitmq  -> RabbitMQ 3.13 / CloudAMQP / Amazon MQ / STACKIT MQ
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: soar
+      POSTGRES_PASSWORD: soar
+      POSTGRES_DB: soar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soar -d soar"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: soar
+      RABBITMQ_DEFAULT_PASS: soar
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  core:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.core
+    environment:
+      HTTP_ADDR: ":8080"
+      POSTGRES_DSN: "postgres://soar:soar@postgres:5432/soar?sslmode=disable"
+      AMQP_URL: "amqp://soar:soar@rabbitmq:5672/"
+      DEFAULT_TENANT_ID: "00000000-0000-0000-0000-000000000001"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    # No in-container healthcheck — distroless ships without a shell or
+    # curl, and adding either would defeat the minimal-base choice.
+    # The smoke script polls /healthz from the host (port 8080) before
+    # running its assertions; the reference-connector waits on /healthz
+    # itself before registering. That's sufficient gating for v1.
+
+  reference-connector:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.connector
+    environment:
+      CONNECTOR_ID: "reference-connector"
+      CORE_API_BASE: "http://core:8080"
+      AMQP_URL: "amqp://soar:soar@rabbitmq:5672/"
+      DEFAULT_TENANT_ID: "00000000-0000-0000-0000-000000000001"
+      HEARTBEAT_MS: "15000"
+    depends_on:
+      core:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  pgdata:

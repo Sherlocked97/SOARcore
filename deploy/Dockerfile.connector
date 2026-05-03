@@ -1,0 +1,25 @@
+# Multi-stage build for cmd/reference-connector. Same shape as
+# Dockerfile.core — the only difference is the build target. We keep
+# them as separate Dockerfiles (rather than one Dockerfile with an ARG)
+# so each image's BuildKit cache stays warm independently.
+
+# syntax=docker/dockerfile:1.7
+FROM golang:1.25-bookworm AS build
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+COPY . .
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux \
+    go build -trimpath -ldflags="-s -w" -o /out/reference-connector ./cmd/reference-connector
+
+FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /
+COPY --from=build /out/reference-connector /reference-connector
+USER nonroot:nonroot
+ENTRYPOINT ["/reference-connector"]
