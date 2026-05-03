@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SOARcore — status</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>SOARcore</h1>
+    <p class="tagline">Open-source, modular SOAR platform.</p>
+  </header>
+
+  <main>
+    <!--
+      First-party analyst UI (ADR-006). This page is intentionally
+      minimal: it consumes only the public API and exists so the
+      project has a usable status surface before the workbench lands.
+    -->
+    <section class="card" id="health-card">
+      <h2>Core API</h2>
+      <p>
+        <span class="status-dot" id="health-dot" aria-hidden="true"></span>
+        <span id="health-text">checking…</span>
+      </p>
+      <p class="muted small">Last checked: <span id="health-checked">—</span></p>
+    </section>
+
+    <section class="card">
+      <h2>Incidents</h2>
+      <div class="stats" id="incident-stats">
+        <div class="stat"><span class="stat-num" id="count-total">—</span><span class="stat-label">total</span></div>
+        <div class="stat"><span class="stat-num" id="count-new">—</span><span class="stat-label">new</span></div>
+        <div class="stat"><span class="stat-num" id="count-triaged">—</span><span class="stat-label">triaged</span></div>
+        <div class="stat"><span class="stat-num" id="count-in-progress">—</span><span class="stat-label">in progress</span></div>
+        <div class="stat"><span class="stat-num" id="count-closed">—</span><span class="stat-label">closed</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Recent incidents</h2>
+      <p class="muted small" id="incidents-empty" hidden>
+        No incidents yet. Try <code>make smoke</code>, or POST one to <code>/v1/incidents</code>.
+      </p>
+      <table id="incidents-table">
+        <thead>
+          <tr>
+            <th>Created</th>
+            <th>Title</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="incidents-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p class="muted small">
+      Status page polls every 10s. See
+      <a href="https://github.com/Sherlocked97/SOARcore">the repository</a>
+      for design notes and ADRs.
+    </p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

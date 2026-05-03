@@ -16,7 +16,8 @@ Inspired by what OpenCTI achieved for Threat Intelligence — applied to SOAR.
 Early implementation. Architecture accepted (ADRs 001–007); the first entity
 (`Incident`) is wired end to end: HTTP API, Postgres persistence, transactional
 outbox, RabbitMQ event publishing, and a reference connector that consumes events
-and calls back into the API. The analyst UI (`/ui`, ADR-006) is not yet built.
+and calls back into the API. The first-party analyst UI (`/ui`, ADR-006) ships
+a minimal status dashboard today; the analyst workbench itself is not yet built.
 
 ## Running Locally
 
@@ -25,11 +26,16 @@ and the `psql` client.
 
 ```bash
 git clone https://github.com/Sherlocked97/SOARcore.git && cd SOARcore
-make up      # postgres, rabbitmq, core, reference-connector
+make up      # postgres, rabbitmq, core, reference-connector, ui
 make build   # build the local Go binaries
 make smoke   # end-to-end smoke test against the running stack
 make down    # tear it all down (drops volumes)
 ```
+
+Once the stack is up:
+
+- core API: <http://localhost:8080>
+- UI status dashboard: <http://localhost:8081>
 
 `make help` lists every target. See [`docs/02-running-locally.md`](./docs/02-running-locally.md)
 for the walkthrough, a hand-rolled first request, and troubleshooting.

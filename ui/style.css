@@ -1,0 +1,118 @@
+/*
+ * Minimal stylesheet for the v1 status page. No framework, no theme
+ * system — once a UI-scoped tech-stack ADR lands and a component
+ * library is chosen, this file goes away.
+ */
+
+:root {
+  --bg: #0f1115;
+  --panel: #161a22;
+  --border: #232938;
+  --text: #e6e8ec;
+  --muted: #8a92a6;
+  --accent: #5aa9ff;
+  --ok: #4ade80;
+  --bad: #f87171;
+  --warn: #fbbf24;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+a { color: var(--accent); }
+
+.topbar {
+  padding: 24px 32px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 { margin: 0; font-size: 22px; letter-spacing: -0.01em; }
+.tagline { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+main {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.card h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+.status-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.status-dot.ok { background: var(--ok); }
+.status-dot.bad { background: var(--bad); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: #0d1019;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.stat-num { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+td.mono { font-family: var(--mono); font-size: 13px; }
+
+.severity-low      { color: var(--muted); }
+.severity-medium   { color: var(--warn); }
+.severity-high     { color: #fb923c; }
+.severity-critical { color: var(--bad); font-weight: 600; }
+
+footer {
+  padding: 24px 32px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+code {
+  font-family: var(--mono);
+  background: #0d1019;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 13px;
+}

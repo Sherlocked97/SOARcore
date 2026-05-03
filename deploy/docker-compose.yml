@@ -81,5 +81,20 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  # First-party analyst UI (ADR-006). Builds from ../ui — its own
+  # Dockerfile, its own asset set, no shared build graph with the
+  # core image. Talks to `core` only via the public API; nginx in
+  # the UI image proxies /healthz and /v1/... so the browser sees
+  # one same-origin surface on port 8081.
+  ui:
+    build:
+      context: ../ui
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      core:
+        condition: service_started
+
 volumes:
   pgdata:

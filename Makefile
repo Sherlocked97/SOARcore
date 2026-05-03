@@ -15,8 +15,10 @@ help: ## list available targets
 
 ## ----- containers ----------------------------------------------------------
 
-up: ## start the full stack (postgres + rabbitmq + core + reference-connector)
+up: ## start the full stack (postgres + rabbitmq + core + reference-connector + ui)
 	$(COMPOSE) up -d --build
+	@echo "  core API:  http://localhost:8080"
+	@echo "  UI:        http://localhost:8081"
 
 down: ## stop the stack and drop volumes
 	$(COMPOSE) down -v
