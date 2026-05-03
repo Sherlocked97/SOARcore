@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soarcore://schemas/incident/v1/attributes",
+  "title": "Incident attributes (v1)",
+  "description": "Schema for the JSONB `attributes` flex zone on the Incident entity. v1 deliberately allows any object — the contract is that this column carries extension fields validated against *some* registered schema. Future versions tighten this.",
+  "type": "object",
+  "additionalProperties": true
+}
