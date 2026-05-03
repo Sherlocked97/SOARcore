@@ -1,0 +1,58 @@
+name: ci
+
+# Repo-hygiene policy (fork-safe patterns, secrets handling,
+# supply-chain checks) will be refined later. v1 keeps the gate to:
+# lint + vet + test + build, all on a single Linux runner with the Go
+# version pinned in go.mod.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set up Go
+        uses: actions/setup-go@v5
+        with:
+          # `check-latest: true` makes setup-go pick the latest patch
+          # release of the major.minor pinned in go.mod.
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: vet
+        run: go vet ./...
+
+      - name: test
+        run: go test ./...
+
+      - name: build
+        run: |
+          go build -trimpath -o /tmp/core ./cmd/core
+          go build -trimpath -o /tmp/reference-connector ./cmd/reference-connector
+          go build -trimpath -o /tmp/smoke-consumer ./cmd/smoke-consumer
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest

@@ -1,0 +1,32 @@
+# golangci-lint configuration. We keep the v1 rule set short and boring;
+# OSS Mentor will tighten policy later. Do not add bespoke linters here
+# without a concrete reason — every linter is a contributor cost.
+
+run:
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck      # errors must be handled
+    - govet         # the canonical Go static analysis
+    - staticcheck   # advanced static analysis (replaces gosimple/unused)
+    - ineffassign   # catch unused assignments
+    - gofumpt       # stricter gofmt
+    - misspell      # docstring typos
+    - revive        # lightweight golint replacement
+
+linters-settings:
+  revive:
+    rules:
+      - name: package-comments
+      - name: exported
+      - name: var-declaration
+      - name: indent-error-flow
+      - name: superfluous-else
+
+issues:
+  exclude-rules:
+    # Tests don't need the same documentation discipline as exported APIs.
+    - path: _test\.go
+      linters: [revive]

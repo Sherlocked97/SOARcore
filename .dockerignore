@@ -1,0 +1,30 @@
+# Keep the docker build context lean and reproducible. Anything not
+# needed by `go build` belongs here.
+
+# VCS + tooling state
+.git
+.github
+.gitignore
+.dockerignore
+
+# Local dev artifacts
+bin
+/out
+
+# Project-private (matches .gitignore)
+.claude
+CLAUDE.md
+personas
+context/personas.md
+
+# Documentation + planning — never shipped in the image
+docs
+README.md
+LICENSE
+notes.md
+*.md
+
+# IDE / OS noise
+.vscode
+.idea
+.DS_Store
