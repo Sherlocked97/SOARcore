@@ -33,6 +33,14 @@ dist/
 build/
 out/
 
+# === Go ===
+bin/
+*.exe
+*.test
+*.out
+coverage.out
+coverage.html
+
 # === Dependency caches (common stacks; expand when stack is chosen) ===
 node_modules/
 __pycache__/
@@ -45,7 +53,7 @@ vendor/
 # === Claude Code local settings ===
 .claude/
 
-# === Project-private: design workflow kept out of the public repo ===
+# === Local notes and project-private files ===
 CLAUDE.md
 personas/
 context/personas.md
