@@ -1,8 +1,6 @@
 # SOARcore
 
 > Open-source, modular SOAR platform built around a stable data layer.
-> Currently in pre-implementation phase — architecture accepted, code
-> not yet published.
 
 ## What This Is
 
@@ -15,15 +13,38 @@ Inspired by what OpenCTI achieved for Threat Intelligence — applied to SOAR.
 
 ## Status
 
-Architecture accepted (ADRs 001–007). Implementation is underway locally; the
-code is not yet published, pending reconciliation with the latest ADRs.
+Early implementation. Architecture accepted (ADRs 001–007); the first entity
+(`Incident`) is wired end to end: HTTP API, Postgres persistence, transactional
+outbox, RabbitMQ event publishing, and a reference connector that consumes events
+and calls back into the API. The analyst UI (`/ui`, ADR-006) is not yet built.
 
-Design notes live under [`context/`](./context/):
+## Running Locally
 
-- [`decisions.md`](./context/decisions.md) — Architectural Decision Records
-- [`open_questions.md`](./context/open_questions.md) — Unresolved design questions
-- [`data_model.md`](./context/data_model.md) — Evolving schema definitions
-- [`product_spec.md`](./context/product_spec.md) — Product/UX requirements (stub)
+Prereqs: Docker + the `docker compose` plugin, Go 1.23+, `make`, `curl`, `jq`,
+and the `psql` client.
+
+```bash
+git clone https://github.com/Sherlocked97/SOARcore.git && cd SOARcore
+make up      # postgres, rabbitmq, core, reference-connector
+make build   # build the local Go binaries
+make smoke   # end-to-end smoke test against the running stack
+make down    # tear it all down (drops volumes)
+```
+
+`make help` lists every target. See [`docs/02-running-locally.md`](./docs/02-running-locally.md)
+for the walkthrough, a hand-rolled first request, and troubleshooting.
+
+## Documentation
+
+Contributor docs live under [`docs/`](./docs/) — architecture overview, codebase
+tour, Go primer, and how to add a migration / entity / connector.
+
+Authoritative design notes:
+
+- [`context/decisions.md`](./context/decisions.md) — Architectural Decision Records
+- [`context/data_model.md`](./context/data_model.md) — Schema and event envelope
+- [`context/product_spec.md`](./context/product_spec.md) — Product/UX requirements
+- [`context/open_questions.md`](./context/open_questions.md) — Unresolved design questions
 
 ## Contributing
 
